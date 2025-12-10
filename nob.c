@@ -39,7 +39,7 @@ struct command_route_t {
 };
 
 static bool command_help(Arena* arena, const command_desc_t* desc, int argc, char** argv) {
-  if (argc != 0) {
+  if (argc > 1) {
     const char* topic = nob_shift(argv, argc);
     nob_log(NOB_ERROR, "no help topic for '%s'", topic);
     return false;
@@ -68,21 +68,12 @@ static bool command_build(Arena* arena, const command_desc_t* desc, int argc, ch
   char* const* build_dir = flag_str("dir", "build", "Build directory");
   char* const* flag_target = flag_str("target", NULL, "The target we need to execute command for");
 
-  if (argc == 0) {
+  if (argc == 1) {
     flag_print_options(stderr);
     return false;
   }
 
-  // flag_parse expects argv[0] to be the program name, but the dispatcher stripped it off.
-  int adjusted_argc = argc + 1;
-  char** adjusted_argv = arena_alloc(arena, sizeof(char*) * adjusted_argc);
-  ASSERT_LOG(adjusted_argv != NULL, "failed to allocate argv for build command");
-  adjusted_argv[0] = "nob";
-  for (int i = 0; i < argc; ++i) {
-    adjusted_argv[i + 1] = argv[i];
-  }
-
-  if (!flag_parse(adjusted_argc, adjusted_argv)) {
+  if (!flag_parse(argc, argv)) {
     flag_print_error(stderr);
     return false;
   }
@@ -90,7 +81,7 @@ static bool command_build(Arena* arena, const command_desc_t* desc, int argc, ch
 }
 
 static bool command_help_build(Arena* arena, const command_desc_t* desc, int argc, char** argv) {
-  if (argc != 0) {
+  if (argc > 1) {
     const char* topic = nob_shift(argv, argc);
     nob_log(NOB_ERROR, "no help topic for '%s'", topic);
     return false;
@@ -176,8 +167,18 @@ int main(int argc, char** argv) {
     ret = 1;
     goto errdefer;
   }
+
+  // flag_parse expects argv[0] to be the program name, but the dispatcher stripped it off.
+  int adjusted_argc = argc + 1;
+  char** adjusted_argv = arena_alloc(arena, sizeof(char*) * adjusted_argc);
+  ASSERT_LOG(adjusted_argv != NULL, "failed to allocate argv for build command");
+  adjusted_argv[0] = "nob";
+  for (int i = 0; i < argc; ++i) {
+    adjusted_argv[i + 1] = argv[i];
+  }
+
   command_desc_t desc = routes[slot].value;
-  bool result = desc.handler(arena, &desc, argc, argv);
+  bool result = desc.handler(arena, &desc, adjusted_argc, adjusted_argv);
   if (!result) {
     ret = 1;
     goto errdefer;

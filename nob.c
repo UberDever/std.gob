@@ -1,5 +1,5 @@
 // clang-format off
-/// NOB_BUILD_LINUX: cc -D_POSIX_C_SOURCE=200809L --std=c99 -Wall -Wextra -I.. -o nob nob.c internal/headeronly/nob.c internal/headeronly/stb_ds.c internal/headeronly/flag.c internal/headeronly/arena.c internal/nob/rebuild_urself.c internal/util.string/string.c
+/// NOB_BUILD_LINUX: cc -fsanitize=address -D_POSIX_C_SOURCE=200809L --std=c99 -Wall -Wextra -I.. -o nob nob.c internal/headeronly/nob.c internal/headeronly/stb_ds.c internal/headeronly/flag.c internal/headeronly/arena.c internal/nob/rebuild_urself.c internal/util.string/string.c
 // clang-format on
 
 #include "std.gob/third_party/nob.h/nob.h"
@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
 
   gob_rebuild_from_directives(argc, argv, __FILE__);
 
-  bool defer1 = false;
+  bool defer1 = false, defer2 = false;
 
   Arena* arena = arena_create(ARENA_SIZE);
   if (arena == NULL) {
@@ -151,6 +151,7 @@ int main(int argc, char** argv) {
     ret = 1;
     goto errdefer;
   }
+  defer2 = true;
 
   const char* program = nob_shift(argv, argc);
   char* help_argv = "help";
@@ -184,5 +185,6 @@ int main(int argc, char** argv) {
 
 errdefer:
   if (defer1) { arena_destroy(arena); }
+  if (defer2) { stbds_shfree(routes); }
   return ret;
 }

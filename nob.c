@@ -28,8 +28,7 @@ typedef struct command_route_t command_route_t;
 typedef struct command_desc_t command_desc_t;
 
 struct command_desc_t {
-  const char* help;
-  command_route_t* routes;
+  const command_route_t* routes;
   bool (*handler)(Arena* arena, const command_desc_t* desc, int argc, char** argv);
 };
 
@@ -39,30 +38,42 @@ struct command_route_t {
 };
 
 static bool command_help(Arena* arena, const command_desc_t* desc, int argc, char** argv) {
-  gob_log(NOB_INFO, "%s", desc->help);
+  nob_log(NOB_INFO, "Available commands:");
+  for (size_t i = 0; i < stbds_shlen(desc->routes); ++i) {
+    const command_route_t* route = &desc->routes[i];
+    Nob_String_View route_key = nob_sv_from_cstr(route->key);
+    nob_sv_chop_by_delim(&route_key, ' ');
+    if (route_key.count != 0) { continue; }
+    nob_log(NOB_INFO, "  %s", route->key);
+  }
+
+  nob_log(NOB_INFO, "Available help subcommands:");
+  for (size_t i = 0; i < stbds_shlen(desc->routes); ++i) {
+    const command_route_t* route = &desc->routes[i];
+    Nob_String_View route_key = nob_sv_from_cstr(route->key);
+    nob_sv_chop_by_delim(&route_key, ' ');
+    if (route_key.count == 0) { continue; }
+    nob_log(NOB_INFO, "  %s", route->key);
+  }
   return true;
 }
 
 static bool command_build(Arena* arena, const command_desc_t* desc, int argc, char** argv) {
-  gob_log(NOB_INFO, "%s", desc->help);
   return true;
 }
 
 static bool command_help_build(Arena* arena, const command_desc_t* desc, int argc, char** argv) {
-  gob_log(NOB_INFO, "%s", desc->help);
   return true;
 }
 
 static void command_put_route(
     command_route_t** routes,
     const char* key,
-    const char* help,
     bool (*handler)(Arena*, const command_desc_t* desc, int, char**)) {
   stbds_shput(
       *routes,
       key,
       ((command_desc_t){
-          .help = help,
           .routes = NULL,
           .handler = handler,
       }));
@@ -71,10 +82,10 @@ static void command_put_route(
 static bool command_fill_routes(Arena* arena, int argc, char** argv, command_route_t** out) {
   command_route_t* routes = NULL;
 
-  command_put_route(&routes, "help", "Show this help message", command_help);
-  command_put_route(&routes, "help build", "Help about the build", command_help_build);
+  command_put_route(&routes, "help", command_help);
+  command_put_route(&routes, "help build", command_help_build);
 
-  command_put_route(&routes, "build", "Build the project", command_build);
+  command_put_route(&routes, "build", command_build);
 
   for (size_t i = 0; i < stbds_shlen(routes); ++i) {
     routes[i].value.routes = routes;

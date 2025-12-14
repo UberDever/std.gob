@@ -1,10 +1,9 @@
 /*
- {
-    NOB_BUILD_LINUX: cc -fsanitize=address -D_POSIX_C_SOURCE=200809L --std=c99 -Wall -Wextra -I..
-    -o nob nob.c internal/headeronly/nob.c
-    internal/headeronly/stb_ds.c internal/headeronly/flag.c internal/headeronly/arena.c
-    internal/nob/rebuild_urself.c internal/util.string/string.c
-  }
+{
+NOB_BUILD_LINUX: cc -fsanitize=address -D_POSIX_C_SOURCE=200809L --std=c99 -Wall -Wextra
+-I.. -o nob nob.c internal/headeronly/nob.c internal/headeronly/stb_ds.c internal/headeronly/flag.c
+internal/headeronly/arena.c internal/nob/rebuild_urself.c internal/util.string/string.c
+}
 */
 
 #include "std.gob/third_party/nob.h/nob.h"

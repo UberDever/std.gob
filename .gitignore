@@ -1,4 +1,4 @@
 .vscode/
 build/
-nob
-nob.old
+/nob
+/nob.old

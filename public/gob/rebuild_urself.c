@@ -1,5 +1,4 @@
 #include "std.gob/internal/domain/api.h"
-#include "std.gob/internal/nob/api.h"
 #include "std.gob/internal/util.optional/api.h"
 #include "std.gob/third_party/nob.h/nob.h"
 
@@ -147,8 +146,7 @@ static opt_Nob_String_View next_toplevel_block_comment(
       for (size_t j = body_start; j + 1 < end; ++j) {
         if (source.data[j] == '*' && source.data[j + 1] == '/') {
           return opt_some(
-              Nob_String_View,
-              nob_sv_from_parts(source.data + body_start, j - body_start));
+              Nob_String_View, nob_sv_from_parts(source.data + body_start, j - body_start));
         }
       }
       return opt_none(Nob_String_View);
@@ -198,7 +196,7 @@ void gob_rebuild_from_directives(int argc, char** argv, const char* source_path)
 
   opt_size_t include_pos_opt = next_include_directive_pos(source_sv, 0);
   if (!include_pos_opt.has_value) {
-    gob_log(NOB_ERROR, "failed to locate includes in %s", source_path);
+    nob_log(NOB_ERROR, "failed to locate includes in %s", source_path);
     returncode = 1;
     goto defer;
   }
@@ -206,7 +204,7 @@ void gob_rebuild_from_directives(int argc, char** argv, const char* source_path)
   opt_Nob_String_View comment_opt =
       next_toplevel_block_comment(source_sv, 0, include_pos_opt.value);
   if (!comment_opt.has_value) {
-    gob_log(NOB_ERROR, "failed to locate build directives block in %s", source_path);
+    nob_log(NOB_ERROR, "failed to locate build directives block in %s", source_path);
     returncode = 1;
     goto defer;
   }
@@ -263,7 +261,7 @@ void gob_rebuild_from_directives(int argc, char** argv, const char* source_path)
   }
 
   if (command == NULL) {
-    gob_log(
+    nob_log(
         NOB_ERROR,
         "no build directive for platform (%.*s) found in %s",
         (int)platform_key.count,
@@ -309,21 +307,4 @@ defer:
   if (defer_inputs) { NOB_FREE(inputs.items); }
   if (defer_cmd) { nob_cmd_free(cmd); }
   if (!do_return) { exit(returncode); }
-}
-
-void gob_log_impl(const char* filepath, size_t line, size_t level, const char* fmt, ...) {
-  const char* level_str = "UNKNOWN";
-  switch (level) {
-    case NOB_ERROR: level_str = "ERROR"; break;
-    case NOB_WARNING: level_str = "WARNING"; break;
-    case NOB_INFO: level_str = "INFO"; break;
-    default: break;
-  }
-
-  fprintf(stderr, "[%s] %s:%zu ", level_str, filepath, line);
-  va_list args;
-  va_start(args, fmt);
-  vfprintf(stderr, fmt, args);
-  va_end(args);
-  fprintf(stderr, "\n");
 }

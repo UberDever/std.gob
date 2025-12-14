@@ -6,7 +6,6 @@
 
 #define gob_log(level, fmt, ...) gob_log_impl(__FILE__, __LINE__, level, fmt, ##__VA_ARGS__)
 
-void gob_rebuild_from_directives(int argc, char** argv, const char* source_path);
 void gob_log_impl(const char* filepath, size_t line, size_t level, const char* fmt, ...)
     NOB_PRINTF_FORMAT(4, 5);
 

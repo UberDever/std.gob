@@ -4,6 +4,12 @@
 #include "std.gob/third_party/nob.h/nob.h"
 #include <stddef.h>
 
+#define ASSERT_LOG(cond, fmt, ...)                                                                 \
+  if (!(cond)) {                                                                                   \
+    gob_log(NOB_ERROR, fmt, ##__VA_ARGS__);                                                        \
+    NOB_UNREACHABLE("assertion failed");                                                           \
+  }
+
 #define gob_log(level, fmt, ...) gob_log_impl(__FILE__, __LINE__, level, fmt, ##__VA_ARGS__)
 
 void gob_log_impl(const char* filepath, size_t line, size_t level, const char* fmt, ...)

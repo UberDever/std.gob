@@ -171,6 +171,7 @@ void gob_rebuild_from_directives(int argc, char** argv, const char* source_path)
   defer_inputs = true;
   nob_da_append(&inputs, source_path);
 
+  // TODO: inputs must be filled with sources from the parsed command
   int rebuild_is_needed = nob_needs_rebuild(binary_path, inputs.items, inputs.count);
   if (rebuild_is_needed < 0) {
     returncode = 1;

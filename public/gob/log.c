@@ -1,4 +1,4 @@
-#include "std.gob/internal/gob/api.h"
+#include "api.h"
 #include "std.gob/third_party/nob.h/nob.h"
 
 void gob_log_impl(const char* filepath, size_t line, size_t level, const char* fmt, ...) {

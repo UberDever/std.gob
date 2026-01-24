@@ -1,6 +1,6 @@
 #include "api.h"
-#include "std.gob/internal/gob/api.h"
 #include "std.gob/internal/util.string/api.h"
+#include "std.gob/public/gob/api.h"
 #include "std.gob/third_party/arena-allocator/arena.h"
 #include "std.gob/third_party/flag.h/flag.h"
 #include "std.gob/third_party/nob.h/nob.h"
@@ -115,7 +115,7 @@ int gob_command_run(Arena* arena, int argc, char** argv, gob_command_route_t* ro
   // flag_parse expects argv[0] to be the program name, but the dispatcher stripped it off.
   int adjusted_argc = argc + 1;
   char** adjusted_argv = arena_alloc(arena, sizeof(char*) * adjusted_argc);
-  ASSERT_LOG(adjusted_argv != NULL, "failed to allocate argv for build command");
+  GD_ASSERT_LOG(adjusted_argv != NULL, "failed to allocate argv for build command");
   adjusted_argv[0] = "nob";
   for (int i = 0; i < argc; ++i) {
     adjusted_argv[i + 1] = argv[i];

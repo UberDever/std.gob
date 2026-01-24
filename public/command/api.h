@@ -1,8 +1,12 @@
 #ifndef __PUBLIC_COMMAND_API_H__
 #define __PUBLIC_COMMAND_API_H__
 
-#include "std.gob/third_party/arena-allocator/arena.h"
 #include <stdbool.h>
+
+#ifndef USE_DEFAULT_ARENA_T
+#define USE_DEFAULT_ARENA_T
+#include "std.gob/third_party/arena-allocator/arena.h"
+#endif
 
 typedef struct gob_command_route_t gob_command_route_t;
 typedef struct gob_command_desc_t gob_command_desc_t;

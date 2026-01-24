@@ -8,7 +8,6 @@ public/gob/rebuild_urself.c public/command/route.c
 */
 
 #include "std.gob/third_party/nob.h/nob.h"
-#include "std.gob/internal/gob/api.h"
 #include "std.gob/public/command/api.h"
 #include "std.gob/public/gob/api.h"
 #include "std.gob/third_party/arena-allocator/arena.h"

@@ -1,6 +1,6 @@
 #include "impl.h"
-#include "std.gob/internal/gob/api.h"
 #include "std.gob/public/build/api.h"
+#include "std.gob/public/gob/api.h"
 #include "std.gob/third_party/nob.h/nob.h"
 
 bool gob_build_target_is_built(const build_target_t* t) {
@@ -37,7 +37,7 @@ bool gob_build_rule_compile(const build_target_t* t) {
     nob_cmd_append(&cmd, p);
   }
 
-  ASSERT_LOG(t->ins.count == 1, "%zu", t->ins.count);
+  GD_ASSERT_LOG(t->ins.count == 1, "%zu", t->ins.count);
   nob_cmd_append(&cmd, "-c");
   const char* in = t->ins.items[0];
   nob_cmd_append(&cmd, in);

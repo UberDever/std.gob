@@ -1,12 +1,19 @@
 #ifndef __INTERNAL_UTIL_STRING_STRING_API_H__
 #define __INTERNAL_UTIL_STRING_STRING_API_H__
 
-#include "std.gob/internal/util.optional/api.h"
-#include "std.gob/third_party/arena-allocator/arena.h"
-
 #include <stdbool.h>
 #include <stddef.h>
 #include <string.h>
+
+#ifndef USE_DEFAULT_ARENA_T
+#define USE_DEFAULT_ARENA_T
+#include "std.gob/third_party/arena-allocator/arena.h"
+#endif
+
+#ifndef USE_DEFUALT_OPTIONAL_T
+#define USE_DEFUALT_OPTIONAL_T
+#include "std.gob/internal/util.optional/api.h"
+#endif
 
 // Null-terminated utf-8 string stored in arena
 typedef struct {
@@ -16,13 +23,8 @@ typedef struct {
 
 DEFINE_OPTIONAL(str_t);
 
-static inline const char* str_to_cstr(Arena* arena, str_t str) {
-  return (const char*)(arena->region + str.off);
-}
-
-static inline char* str_to_cstr_mut(Arena* arena, str_t str) {
-  return (char*)(arena->region + str.off);
-}
+#define str_to_cstr(arena, str)     ((const char*)(arena->region + (str).off))
+#define str_to_cstr_mut(arena, str) ((char*)(arena->region + (str).off))
 
 opt_str_t str_from_cstr(Arena* arena, const char* cstr);
 opt_str_t str_concat_v(Arena* arena, ...);
